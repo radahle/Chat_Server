@@ -66,18 +66,11 @@ public class Server extends Task {
             clientList = new ArrayList<Socket>();
 
         while (true) {
-            Socket socket = serverSocket.accept();
-            //PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+            Socket socket = serverSocket.accept();       
             clientList.add(socket);
-
-            ServerService serverService = new ServerService(socket, listView_Log, listView, textArea_Server_Log, clientList);
-            //serverService.getClientList().add(socket);
-
-            Platform.runLater(() -> listView.getItems().add(serverService.getClientInfo()));
-
-            Platform.runLater(() -> listView_Log.getItems().add(serverService.getConnectedLog()));
-
-            System.out.println(serverService.getClientList());
+            ServerService serverService = new ServerService(socket, listView_Log, listView, textArea_Server_Log, clientList);                 
+            Platform.runLater(() -> listView.getItems().add(serverService.getClientInfo()));            
+            Platform.runLater(() -> listView_Log.getItems().add(serverService.getConnectedLog()));       
             serverService.start();
         }
     }

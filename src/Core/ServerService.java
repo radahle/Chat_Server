@@ -23,6 +23,8 @@ import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
 
+import java.awt.Toolkit;
+
 /**
  * Created by Shohaib on 30.01.2017.
  */
@@ -46,6 +48,9 @@ public class ServerService extends Service {
     private int client_ID;
     private String log;
     private List<Socket> clientList;
+    private List<Socket> check;
+    BufferedReader bufferedReader;
+    PrintWriter printWriter;
 
 
     /**
@@ -67,6 +72,7 @@ public class ServerService extends Service {
         dateFormat = new SimpleDateFormat("[yyyy/MM/dd - HH:mm:ss]");
         date = new Date();
     }
+    
 
     /**
      * @return Information related to client.
@@ -93,7 +99,13 @@ public class ServerService extends Service {
         return log = "Client: [" + this.client_Address + ":" + this.clientPort
                 + "] Disconnected " + dateFormat.format(new Date()) + " with userID: " + this.client_ID;
     }
-
+    
+    public int getPort(){
+    	
+    	return this.clientPort;
+    }
+    
+    
     /**
      * @return
      */
@@ -111,26 +123,71 @@ public class ServerService extends Service {
 
         this.clientList = clientList;
     }
-
-
+    
+    
+    public void clientUpdate() throws IOException {
+         	for(int i = 0; i < clientList.size(); i++){
+         		socket = clientList.get(i);
+         		for (int j = 0; j < clientList.size(); j++) {
+         			String clientInfo = "IP: " + clientList.get(j).getInetAddress() + " Port: " + clientList.get(j).getPort();
+         			
+         		
+         			printWriter.println(clientInfo);
+             		printWriter = new PrintWriter(socket.getOutputStream(), true);
+             		
+					}
+         	}
+    }
+   
     /**
      * @return
      */
     @Override
-    protected Task createTask() {
+    protected Task<Object> createTask() {
 
-        Task task = new Task() {
+        Task<Object> task = new Task<Object>() {
             @Override
             protected Object call() throws Exception {
                 try {
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    //PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-
-
+                    bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    printWriter = new PrintWriter(socket.getOutputStream(), true);
+                  
                     String receivedText;
+                    
+                    System.out.println("Liste oppdatert etter når klient logger på: " + clientList);
+                    clientUpdate();
+                    
+                    /*
+                    int temp = 0; 
+                    while(clientList.size() != temp) {
+                    	for(int i = 0; i < clientList.size(); i++){
+                    		socket = clientList.get(i);
+                    		for (int j = 0; j < clientList.size(); j++) {
+                    			String clientInfo = "IP: " + clientList.get(j).getInetAddress() + " Port: " + clientList.get(j).getPort();
+                        		printWriter.println(clientInfo);
+                        		printWriter = new PrintWriter(socket.getOutputStream(), true);
+							}
+                    	}
+                    	temp = clientList.size();
+                    }
+					*/
+                   /* 
+                    int temp = 0;
+                        
+                    if(clientList.size() != temp) {
+                    	for (int i = 0; i < clientList.size(); i++) {
+                    		temp = 0;
+                    		socket = clientList.get(i);
+                    		System.out.println(clientList.get(i));
+                    		printWriter.println(clientList.get(i));
+                    		printWriter = new PrintWriter(socket.getOutputStream(), true);
+                    	}
+                    	temp = clientList.size();
+                    }
+                    *herherherherherherherherherherherherherherherherherherherh/
 
-
-                    String info = listView_Client.getItems().toString();
+                    
+                    //String info = listView_Client.getItems().toString();
 
 
                     /*if (info.length() < 1) {
@@ -147,6 +204,7 @@ public class ServerService extends Service {
 
                         String receivingClient;
                         String outText;
+                        clientUpdate();
 
                         System.out.println();
                         //             System.out.println("Mottatt tekst: " + receivedText);
@@ -169,7 +227,7 @@ public class ServerService extends Service {
                         for (int i = 0; i < clientList.size(); i++) {
                             if (clientList.get(i).getPort() == parseInt(receivingClient)) {
                                 socket = clientList.get(i);
-                                PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
+                                printWriter = new PrintWriter(socket.getOutputStream(), true);
                                 printWriter.println(outText);
                                 //break;
                             }
@@ -189,19 +247,58 @@ public class ServerService extends Service {
 
                         Platform.runLater(() -> listView_Log.getItems().add(getDisconnectedLog()));
 
+                        for(int i = 0; i < clientList.size(); i++){
+                        	
+                        	if(clientList.get(i).getPort() == getPort()){
+                        		
+                        		clientList.remove(i);
+                        		
+                        		System.out.println("Oppdatert liste etter at en klient logget ut: " + 
+                                		clientList);
+                        		
+                        		clientUpdate();
+                        		//printWriter = new PrintWriter(socket.getOutputStream(), true);
+                        		//printWriter.println(clientList);
+                        		//printWriter.flush();
+                        		
+    	
+
+                        	}
+                        }
+                        
+                        
                         for (int i = 0; i < listView_Client.getItems().size(); i++) {
                             if (listView_Client.getItems().get(i).equals(getClientInfo())) {
 
                                 int finalI = i;
                                 Platform.runLater(() -> listView_Client.getItems().remove(finalI));
-
                             }
                         }
+                       
                     }
 
                 } catch (IOException ioe) {
                     Platform.runLater(() -> listView_Log.getItems().add(getDisconnectedLog()));
 
+                    for(int i = 0; i < clientList.size(); i++){
+                    	
+                    	if(clientList.get(i).getPort() == getPort()){
+                    		
+                    		clientList.remove(i);
+                    		
+                    		System.out.println("Oppdatert liste etter at en klient logget ut: " + 
+                    		clientList);
+                    		
+                    		clientUpdate();
+                    		
+                    		
+                            //printWriter = new PrintWriter(socket.getOutputStream(), true);
+                     		//printWriter.println(clientList);
+                     		//printWriter.flush();
+	
+                    	}
+                    }
+                    
                     for (int i = 0; i < listView_Client.getItems().size(); i++) {
                         if (listView_Client.getItems().get(i).equals(getClientInfo())) {
 
@@ -210,8 +307,10 @@ public class ServerService extends Service {
 
                         }
                     }
+                    clientUpdate();
                     System.out.println("Exception while reading or receiving " +
                             "from in/out port");
+                   
                 }
 
                 return null;
