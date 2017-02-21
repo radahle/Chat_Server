@@ -1,23 +1,15 @@
 package Core;
 
 import javafx.application.Platform;
-import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 
-import java.io.*;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static java.lang.Integer.parseInt;
 
@@ -29,7 +21,7 @@ public class Server extends Task {
     public List<Socket> clientList;
     //private int clientList;
     @FXML
-    ListView listView;
+    ListView listView_clients;
     @FXML
     ListView listView_Log;
     @FXML
@@ -39,13 +31,13 @@ public class Server extends Task {
 
     /**
      * @param portNumber   Port number for server.
-     * @param listView     List for clientList connected.
+     * @param listView_clients     List for clientList connected.
      * @param listView_Log List for showing entries.
      */
-    public Server(int portNumber, ListView listView, ListView listView_Log, TextArea textArea_Server_Log) {
+    public Server(int portNumber, ListView listView_clients, ListView listView_Log, TextArea textArea_Server_Log) {
 
         this.portNumber = portNumber;
-        this.listView = listView;
+        this.listView_clients = listView_clients;
         this.listView_Log = listView_Log;
         this.textArea_Server_Log = textArea_Server_Log;
         //clientList = 0;
@@ -68,8 +60,8 @@ public class Server extends Task {
         while (true) {
             Socket socket = serverSocket.accept();       
             clientList.add(socket);
-            ServerService serverService = new ServerService(socket, listView_Log, listView, textArea_Server_Log, clientList);                 
-            Platform.runLater(() -> listView.getItems().add(serverService.getClientInfo()));            
+            ServerService serverService = new ServerService(socket, listView_Log, listView_clients, textArea_Server_Log, clientList);
+            Platform.runLater(() -> listView_clients.getItems().add(serverService.getClientInfo()));
             Platform.runLater(() -> listView_Log.getItems().add(serverService.getConnectedLog()));       
             serverService.start();
         }

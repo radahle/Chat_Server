@@ -129,9 +129,8 @@ public class ServerService extends Service {
          	for(int i = 0; i < clientList.size(); i++){
          		socket = clientList.get(i);
          		for (int j = 0; j < clientList.size(); j++) {
-         			String clientInfo = "IP: " + clientList.get(j).getInetAddress() + " Port: " + clientList.get(j).getPort();
-         			
-         		
+         			String clientInfo = "#@$[" + clientList.get(j).getInetAddress() + ":" + clientList.get(j).getPort() + "]$@#";
+
          			printWriter.println(clientInfo);
              		printWriter = new PrintWriter(socket.getOutputStream(), true);
              		
@@ -154,7 +153,7 @@ public class ServerService extends Service {
                   
                     String receivedText;
                     
-                    System.out.println("Liste oppdatert etter når klient logger på: " + clientList);
+                    System.out.println("Liste oppdatert etter nÃ¥r klient logger pÃ¥: " + clientList);
                     clientUpdate();
                     
                     /*
@@ -204,7 +203,6 @@ public class ServerService extends Service {
 
                         String receivingClient;
                         String outText;
-                        clientUpdate();
 
                         System.out.println();
                         //             System.out.println("Mottatt tekst: " + receivedText);
