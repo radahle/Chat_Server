@@ -37,7 +37,8 @@ public class ServerService extends Service {
     ListView listView_Client;
     @FXML
     TextArea textArea_Server_Log;
-
+    BufferedReader bufferedReader;
+    PrintWriter printWriter;
     //datafields
     private DateFormat dateFormat;
     private Date date;
@@ -49,8 +50,6 @@ public class ServerService extends Service {
     private String log;
     private List<Socket> clientList;
     private List<Socket> check;
-    BufferedReader bufferedReader;
-    PrintWriter printWriter;
 
 
     /**
@@ -72,7 +71,7 @@ public class ServerService extends Service {
         dateFormat = new SimpleDateFormat("[yyyy/MM/dd - HH:mm:ss]");
         date = new Date();
     }
-    
+
 
     /**
      * @return Information related to client.
@@ -99,13 +98,13 @@ public class ServerService extends Service {
         return log = "Client: [" + this.client_Address + ":" + this.clientPort
                 + "] Disconnected " + dateFormat.format(new Date()) + " with userID: " + this.client_ID;
     }
-    
-    public int getPort(){
-    	
-    	return this.clientPort;
+
+    public int getPort() {
+
+        return this.clientPort;
     }
-    
-    
+
+
     /**
      * @return
      */
@@ -123,21 +122,25 @@ public class ServerService extends Service {
 
         this.clientList = clientList;
     }
-    
-    
+
+
     public void clientUpdate() throws IOException {
-         	for(int i = 0; i < clientList.size(); i++){
-         		socket = clientList.get(i);
-         		for (int j = 0; j < clientList.size(); j++) {
-         			String clientInfo = "#@$[" + clientList.get(j).getInetAddress() + ":" + clientList.get(j).getPort() + "]$@#";
+        int length = clientList.size();
+        for(int i = 0; i < length; i++){
+            socket = clientList.get(i);
+            for (int j = 0; j < length; j++) {
+                String clientInfo = "#@$[" + clientList.get(j).getInetAddress() + ":" + clientList.get(j).getPort() + "]$@#";
 
-             		printWriter = new PrintWriter(socket.getOutputStream(), true);
-         			printWriter.println(clientInfo);
+                printWriter = new PrintWriter(socket.getOutputStream(), true);
+                printWriter.println(clientInfo);
 
-					}
-         	}
+            }
+           // Slutt på klienter, sender kodeord
+                printWriter = new PrintWriter(socket.getOutputStream(), true);
+                printWriter.println("£#|¤%|&&|%¤|#£");
+        }
     }
-   
+
     /**
      * @return
      */
@@ -150,7 +153,7 @@ public class ServerService extends Service {
                 try {
                     bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     printWriter = new PrintWriter(socket.getOutputStream(), true);
-                  
+
                     String receivedText;
 
                     clientUpdate();
@@ -168,7 +171,7 @@ public class ServerService extends Service {
                         Matcher textMatcher = textPattern.matcher(receivedText);
                         outText = textMatcher.find() ? textMatcher.group(1) : null;
 
-                        textArea_Server_Log.appendText(getClientInfo() + " > " + receivedText+ "\n");
+                        textArea_Server_Log.appendText(getClientInfo() + " > " + receivedText + "\n");
 
                         for (int i = 0; i < clientList.size(); i++) {
                             if (clientList.get(i).getPort() == parseInt(receivingClient)) {
@@ -185,58 +188,39 @@ public class ServerService extends Service {
 
                         Platform.runLater(() -> listView_Log.getItems().add(getDisconnectedLog()));
 
-                        for(int i = 0; i < clientList.size(); i++){
-                        	
-                        	if(clientList.get(i).getPort() == getPort()){
-                        		
-                        		clientList.remove(i);
-                        		
-                        		System.out.println("Oppdatert liste etter at en klient logget ut: " + 
-                                		clientList);
-                        		
-                        		//clientUpdate();
-                        		//printWriter = new PrintWriter(socket.getOutputStream(), true);
-                        		//printWriter.println(clientList);
-                        		//printWriter.flush();
-                        		
-    	
-
-                        	}
+                        for (int i = 0; i < clientList.size(); i++) {
+                            if (clientList.get(i).getPort() == getPort()) {
+                                clientList.remove(i);
+                                System.out.println("Oppdatert liste etter at en klient logget ut: " +
+                                        clientList);
+                            }
                         }
-                        
-                        
+
+
                         for (int i = 0; i < listView_Client.getItems().size(); i++) {
                             if (listView_Client.getItems().get(i).equals(getClientInfo())) {
-
                                 int finalI = i;
                                 Platform.runLater(() -> listView_Client.getItems().remove(finalI));
                             }
                         }
                         clientUpdate();
                     }
-
                 } catch (IOException ioe) {
-                    Platform.runLater(() -> listView_Log.getItems().add(getDisconnectedLog()));
-                    for(int i = 0; i < clientList.size(); i++){
-                    	
-                    	if(clientList.get(i).getPort() == getPort()){
-                    		
-                    		clientList.remove(i);
-                    		
-                    		System.out.println("Oppdatert liste etter at en klient logget ut: " + 
-                    		clientList);
-                    		
-                    		//clientUpdate();
 
-                    	}
+                    Platform.runLater(() -> listView_Log.getItems().add(getDisconnectedLog()));
+
+                    for (int i = 0; i < clientList.size(); i++) {
+                        if (clientList.get(i).getPort() == getPort()) {
+                            clientList.remove(i);
+                            System.out.println("Oppdatert liste etter at en klient logget ut: " +
+                                    clientList);
+                        }
                     }
-                    
+
                     for (int i = 0; i < listView_Client.getItems().size(); i++) {
                         if (listView_Client.getItems().get(i).equals(getClientInfo())) {
-
                             int finalI = i;
                             Platform.runLater(() -> listView_Client.getItems().remove(finalI));
-
                         }
                     }
                     clientUpdate();
