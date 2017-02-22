@@ -126,19 +126,16 @@ public class ServerService extends Service {
     
     
     public void clientUpdate() throws IOException {
-
          	for(int i = 0; i < clientList.size(); i++){
          		socket = clientList.get(i);
-         		System.out.println("Socket: " + i);
          		for (int j = 0; j < clientList.size(); j++) {
-         			System.out.println("Client: " + j);
          			String clientInfo = "#@$[" + clientList.get(j).getInetAddress() + ":" + clientList.get(j).getPort() + "]$@#";
-         			printWriter.println(clientInfo);
+
              		printWriter = new PrintWriter(socket.getOutputStream(), true);
+         			printWriter.println(clientInfo);
+
 					}
-         		System.out.println("Antall klienter: " + clientList.size());
          	}
-         System.out.println("----------------------------------");
     }
    
     /**
@@ -155,7 +152,7 @@ public class ServerService extends Service {
                     printWriter = new PrintWriter(socket.getOutputStream(), true);
                   
                     String receivedText;
-                    
+
                     clientUpdate();
 
                     while ((receivedText = bufferedReader.readLine()) != null) {
@@ -165,7 +162,7 @@ public class ServerService extends Service {
 
                         Pattern portPattern = Pattern.compile(".*@(.*)");
                         Matcher portMatcher = portPattern.matcher(receivedText);
-                        receivingClient = portMatcher.find() ? portMatcher.group(1) : null; 
+                        receivingClient = portMatcher.find() ? portMatcher.group(1) : null;
 
                         Pattern textPattern = Pattern.compile("^(.*(?=@))");
                         Matcher textMatcher = textPattern.matcher(receivedText);
@@ -182,7 +179,7 @@ public class ServerService extends Service {
                         }
 
                     }
-                    
+
                     socket.close();
                     if (socket.isClosed()) {
 
@@ -193,12 +190,20 @@ public class ServerService extends Service {
                         	if(clientList.get(i).getPort() == getPort()){
                         		
                         		clientList.remove(i);
-                        		clientUpdate();
+                        		
+                        		System.out.println("Oppdatert liste etter at en klient logget ut: " + 
+                                		clientList);
+                        		
+                        		//clientUpdate();
+                        		//printWriter = new PrintWriter(socket.getOutputStream(), true);
+                        		//printWriter.println(clientList);
+                        		//printWriter.flush();
+                        		
+    	
 
                         	}
                         }
                         
-                        clientUpdate();
                         
                         for (int i = 0; i < listView_Client.getItems().size(); i++) {
                             if (listView_Client.getItems().get(i).equals(getClientInfo())) {
@@ -207,9 +212,8 @@ public class ServerService extends Service {
                                 Platform.runLater(() -> listView_Client.getItems().remove(finalI));
                             }
                         }
-                       
+                        clientUpdate();
                     }
-                    
 
                 } catch (IOException ioe) {
                     Platform.runLater(() -> listView_Log.getItems().add(getDisconnectedLog()));
@@ -218,12 +222,14 @@ public class ServerService extends Service {
                     	if(clientList.get(i).getPort() == getPort()){
                     		
                     		clientList.remove(i);
-                    		clientUpdate();
                     		
+                    		System.out.println("Oppdatert liste etter at en klient logget ut: " + 
+                    		clientList);
+                    		
+                    		//clientUpdate();
+
                     	}
                     }
-                    
-                    clientUpdate();
                     
                     for (int i = 0; i < listView_Client.getItems().size(); i++) {
                         if (listView_Client.getItems().get(i).equals(getClientInfo())) {
@@ -233,7 +239,7 @@ public class ServerService extends Service {
 
                         }
                     }
-              
+                    clientUpdate();
                     System.out.println("Exception while reading or receiving " +
                             "from in/out port");
                 }

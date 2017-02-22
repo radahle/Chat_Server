@@ -61,7 +61,17 @@ public class Server extends Task {
             Socket socket = serverSocket.accept();       
             clientList.add(socket);
             ServerService serverService = new ServerService(socket, listView_Log, listView_clients, textArea_Server_Log, clientList);
-            Platform.runLater(() -> listView_clients.getItems().add(serverService.getClientInfo()));
+            Platform.runLater(() -> {
+
+                listView_clients.getItems().add(serverService.getClientInfo());
+                //kopierer til en liste
+                //for loop kopierer til ENDA en liste men denne er fra SS
+
+
+                /*
+                så etter det går du i serverservice inne i DC metodene og sammenlikner NÅværende liste og fjerner fra den
+                 */
+            });
             Platform.runLater(() -> listView_Log.getItems().add(serverService.getConnectedLog()));       
             serverService.start();
         }
