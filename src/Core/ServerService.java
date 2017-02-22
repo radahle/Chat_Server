@@ -126,16 +126,19 @@ public class ServerService extends Service {
     
     
     public void clientUpdate() throws IOException {
+
          	for(int i = 0; i < clientList.size(); i++){
          		socket = clientList.get(i);
+         		System.out.println("Socket: " + i);
          		for (int j = 0; j < clientList.size(); j++) {
+         			System.out.println("Client: " + j);
          			String clientInfo = "#@$[" + clientList.get(j).getInetAddress() + ":" + clientList.get(j).getPort() + "]$@#";
-
          			printWriter.println(clientInfo);
              		printWriter = new PrintWriter(socket.getOutputStream(), true);
-             		
 					}
+         		System.out.println("Antall klienter: " + clientList.size());
          	}
+         System.out.println("----------------------------------");
     }
    
     /**
@@ -153,94 +156,34 @@ public class ServerService extends Service {
                   
                     String receivedText;
                     
-                    System.out.println("Liste oppdatert etter når klient logger på: " + clientList);
                     clientUpdate();
-                    
-                    /*
-                    int temp = 0; 
-                    while(clientList.size() != temp) {
-                    	for(int i = 0; i < clientList.size(); i++){
-                    		socket = clientList.get(i);
-                    		for (int j = 0; j < clientList.size(); j++) {
-                    			String clientInfo = "IP: " + clientList.get(j).getInetAddress() + " Port: " + clientList.get(j).getPort();
-                        		printWriter.println(clientInfo);
-                        		printWriter = new PrintWriter(socket.getOutputStream(), true);
-							}
-                    	}
-                    	temp = clientList.size();
-                    }
-					*/
-                   /* 
-                    int temp = 0;
-                        
-                    if(clientList.size() != temp) {
-                    	for (int i = 0; i < clientList.size(); i++) {
-                    		temp = 0;
-                    		socket = clientList.get(i);
-                    		System.out.println(clientList.get(i));
-                    		printWriter.println(clientList.get(i));
-                    		printWriter = new PrintWriter(socket.getOutputStream(), true);
-                    	}
-                    	temp = clientList.size();
-                    }
-                    *herherherherherherherherherherherherherherherherherherherh/
-
-                    
-                    //String info = listView_Client.getItems().toString();
-
-
-                    /*if (info.length() < 1) {
-                        printWriter.println("List does not contain enough members");
-                    } else if (info.length() >= 1) {
-                        printWriter.println(info);
-                    } else if (info.equals(getClientInfo())) {
-                        System.out.println("meg selv");
-                        return null; //?? nope
-                    }*/
 
                     while ((receivedText = bufferedReader.readLine()) != null) {
-                        //              System.out.println("ClientList: " + clientList);
 
                         String receivingClient;
                         String outText;
 
-                        System.out.println();
-                        //             System.out.println("Mottatt tekst: " + receivedText);
-
-                        // rgex for å hente ut portnummer til mottaker
                         Pattern portPattern = Pattern.compile(".*@(.*)");
                         Matcher portMatcher = portPattern.matcher(receivedText);
-                        receivingClient = portMatcher.find() ? portMatcher.group(1) : null;  // Portnummer til mottaker
-                        //       System.out.println("Splittet ut mottakerport: " + receivingClient);
+                        receivingClient = portMatcher.find() ? portMatcher.group(1) : null; 
 
-                        // regex for å fjerne portnummer til mottaker fra meldingen
                         Pattern textPattern = Pattern.compile("^(.*(?=@))");
                         Matcher textMatcher = textPattern.matcher(receivedText);
-                        outText = textMatcher.find() ? textMatcher.group(1) : null;  // Melding til mottaker
-                        //      System.out.println("Sendes videre til mottaker: " + outText);
+                        outText = textMatcher.find() ? textMatcher.group(1) : null;
 
-
-                        textArea_Server_Log.appendText(getClientInfo() + " > " + receivedText/*.toUpperCase()*/ + "\n");
+                        textArea_Server_Log.appendText(getClientInfo() + " > " + receivedText+ "\n");
 
                         for (int i = 0; i < clientList.size(); i++) {
                             if (clientList.get(i).getPort() == parseInt(receivingClient)) {
                                 socket = clientList.get(i);
                                 printWriter = new PrintWriter(socket.getOutputStream(), true);
                                 printWriter.println(outText);
-                                //break;
                             }
                         }
 
-                        if (receivedText.equals("/w " + clientPort)) {
-
-                            System.out.println(clientPort);
-                            System.out.println(socket.getOutputStream().equals(getClientList().contains(clientPort)));
-                        }
                     }
-
-
+                    
                     socket.close();
-
                     if (socket.isClosed()) {
 
                         Platform.runLater(() -> listView_Log.getItems().add(getDisconnectedLog()));
@@ -250,20 +193,12 @@ public class ServerService extends Service {
                         	if(clientList.get(i).getPort() == getPort()){
                         		
                         		clientList.remove(i);
-                        		
-                        		System.out.println("Oppdatert liste etter at en klient logget ut: " + 
-                                		clientList);
-                        		
                         		clientUpdate();
-                        		//printWriter = new PrintWriter(socket.getOutputStream(), true);
-                        		//printWriter.println(clientList);
-                        		//printWriter.flush();
-                        		
-    	
 
                         	}
                         }
                         
+                        clientUpdate();
                         
                         for (int i = 0; i < listView_Client.getItems().size(); i++) {
                             if (listView_Client.getItems().get(i).equals(getClientInfo())) {
@@ -274,28 +209,21 @@ public class ServerService extends Service {
                         }
                        
                     }
+                    
 
                 } catch (IOException ioe) {
                     Platform.runLater(() -> listView_Log.getItems().add(getDisconnectedLog()));
-
                     for(int i = 0; i < clientList.size(); i++){
                     	
                     	if(clientList.get(i).getPort() == getPort()){
                     		
                     		clientList.remove(i);
-                    		
-                    		System.out.println("Oppdatert liste etter at en klient logget ut: " + 
-                    		clientList);
-                    		
                     		clientUpdate();
                     		
-                    		
-                            //printWriter = new PrintWriter(socket.getOutputStream(), true);
-                     		//printWriter.println(clientList);
-                     		//printWriter.flush();
-	
                     	}
                     }
+                    
+                    clientUpdate();
                     
                     for (int i = 0; i < listView_Client.getItems().size(); i++) {
                         if (listView_Client.getItems().get(i).equals(getClientInfo())) {
@@ -305,10 +233,9 @@ public class ServerService extends Service {
 
                         }
                     }
-                    clientUpdate();
+              
                     System.out.println("Exception while reading or receiving " +
                             "from in/out port");
-                   
                 }
 
                 return null;
