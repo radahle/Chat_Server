@@ -191,8 +191,6 @@ public class ServerService extends Service {
                         for (int i = 0; i < clientList.size(); i++) {
                             if (clientList.get(i).getPort() == getPort()) {
                                 clientList.remove(i);
-                                System.out.println("Oppdatert liste etter at en klient logget ut: " +
-                                        clientList);
                             }
                         }
 
@@ -212,8 +210,6 @@ public class ServerService extends Service {
                     for (int i = 0; i < clientList.size(); i++) {
                         if (clientList.get(i).getPort() == getPort()) {
                             clientList.remove(i);
-                            System.out.println("Oppdatert liste etter at en klient logget ut: " +
-                                    clientList);
                         }
                     }
 
@@ -224,8 +220,6 @@ public class ServerService extends Service {
                         }
                     }
                     clientUpdate();
-                    System.out.println("Exception while reading or receiving " +
-                            "from in/out port");
                 }
 
                 return null;
