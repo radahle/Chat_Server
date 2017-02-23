@@ -51,6 +51,8 @@ public class ServerService extends Service {
     private List<Socket> clientList;
     private List<Socket> check;
 
+    
+    
 
     /**
      * @param socket
@@ -162,6 +164,7 @@ public class ServerService extends Service {
 
                         String receivingClient;
                         String outText;
+                        String registerText;
 
                         Pattern portPattern = Pattern.compile(".*@(.*)");
                         Matcher portMatcher = portPattern.matcher(receivedText);
