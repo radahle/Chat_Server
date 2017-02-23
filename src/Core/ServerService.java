@@ -26,8 +26,14 @@ import static java.lang.Integer.parseInt;
 import java.awt.Toolkit;
 
 /**
- * Created by Shohaib on 30.01.2017.
+ * Class ServerService
+ * This class extends Service and its' job is to run workers.
+ * @author Kittimasak Bunrat <s300342>
+ * @author Shohaib Muhammad <s3003263>
+ * @author Pontus Sk�ld <s300377>
+ * @author Rudi Andr� Dahle <s300373>
  */
+
 public class ServerService extends Service {
 
 
@@ -39,7 +45,7 @@ public class ServerService extends Service {
     TextArea textArea_Server_Log;
     BufferedReader bufferedReader;
     PrintWriter printWriter;
-    //datafields
+
     private DateFormat dateFormat;
     private Date date;
     private Socket socket;
@@ -51,13 +57,13 @@ public class ServerService extends Service {
     private List<Socket> clientList;
     private List<Socket> check;
 
-    
-    
-
     /**
+     * Constructor for the ServerService class.
      * @param socket
      * @param listView_Log
      * @param listView_Client
+     * @param textArea_Server_Log
+     * @param clientList
      */
     public ServerService(Socket socket, ListView listView_Log, ListView listView_Client, TextArea textArea_Server_Log, List<Socket> clientList) {
 
@@ -76,6 +82,7 @@ public class ServerService extends Service {
 
 
     /**
+     * This method returns clientInfo
      * @return Information related to client.
      */
     public String getClientInfo() {
@@ -84,6 +91,7 @@ public class ServerService extends Service {
     }
 
     /**
+     * This method returns client info with timestamp and unique userID when a client connects.
      * @return Information related to when client Connected.
      */
     public String getConnectedLog() {
@@ -93,6 +101,7 @@ public class ServerService extends Service {
     }
 
     /**
+     * This method returns client info with timestamp and unique userID when a client disconnects.
      * @return Information related to when client Disconnected
      */
     public String getDisconnectedLog() {
@@ -101,31 +110,19 @@ public class ServerService extends Service {
                 + "] Disconnected " + dateFormat.format(new Date()) + " with userID: " + this.client_ID;
     }
 
+    /**
+     * This method returns the client's port.
+     * @return
+     */
     public int getPort() {
 
         return this.clientPort;
     }
 
-
     /**
-     * @return
+     * A method that will send active connections to every active sockets.
+     * @throws IOException
      */
-    @Deprecated
-    public List<Socket> getClientList() {
-
-        return clientList;
-    }
-
-    /**
-     * @param clientList
-     */
-    @Deprecated
-    public void setClientList(List<Socket> clientList) {
-
-        this.clientList = clientList;
-    }
-
-
     public void clientUpdate() throws IOException {
         int length = clientList.size();
         for(int i = 0; i < length; i++){
@@ -137,14 +134,14 @@ public class ServerService extends Service {
                 printWriter.println(clientInfo);
 
             }
-           // Slutt på klienter, sender kodeord
                 printWriter = new PrintWriter(socket.getOutputStream(), true);
                 printWriter.println("£#|¤%|&&|%¤|#£");
         }
     }
 
     /**
-     * @return
+     * Method will create a worker when thread is called.
+     * @return 
      */
     @Override
     protected Task<Object> createTask() {
